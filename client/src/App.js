@@ -21,6 +21,7 @@ export default function App() {
   const [customHeight, setCustomHeight] = useState('');
   const [frameColor, setFrameColor] = useState('#3ecf00');
   const [image, setImage] = useState('');
+  const generateRoutes = require('./generate');
   const [stage, setStage] = useState('login');
   const [loading, setLoading] = useState(false);
   const [paymentIframe, setPaymentIframe] = useState(null);
