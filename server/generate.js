@@ -1,11 +1,11 @@
+// server/generate.js
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const sharp = require('sharp');
 const multer = require('multer');
+const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
-const jwt = require('jsonwebtoken');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'server/uploads'),
@@ -17,6 +17,7 @@ function auth(req, res, next) {
   const token = req.headers.authorization;
   if (!token) return res.status(401).json({ message: 'Yetkisiz' });
   try {
+    const jwt = require('jsonwebtoken');
     req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
   } catch {
@@ -24,7 +25,7 @@ function auth(req, res, next) {
   }
 }
 
-router.post('/generate-image', auth, upload.fields([{ name: 'logo' }, { name: 'bgImage' }]), async (req, res) => {
+router.post('/', auth, upload.fields([{ name: 'logo' }, { name: 'bgImage' }]), async (req, res) => {
   const {
     overlayText, size = '1080x1080', bgMode, bgColor = '#ffffff',
     logoPosition = 'top', logoScale = 100, textColor = '#ffffff',
@@ -34,7 +35,6 @@ router.post('/generate-image', auth, upload.fields([{ name: 'logo' }, { name: 'b
 
   const logoFile = req.files['logo']?.[0];
   const bgFile = req.files['bgImage']?.[0];
-
   const users = req.app.get('users');
   const user = users.find(u => u.email === req.user.email);
   if (!user || user.credits <= 0) return res.status(402).json({ message: 'Krediniz yok' });
@@ -88,11 +88,10 @@ router.post('/generate-image', auth, upload.fields([{ name: 'logo' }, { name: 'b
     const output = `server/uploads/result-${Date.now()}.png`;
     await base.composite(composites).png().toFile(output);
     user.credits--;
-
-    res.json({ imageUrl: `/uploads/${output.split('uploads/')[1]}` });
+    res.json({ imageUrl: `/${output.split('server/')[1]}` });
   } catch (err) {
-    console.error('Görsel oluşturma hatası:', err);
-    res.status(500).json({ message: 'Görsel oluşturulamadı' });
+    console.error('Görsel hatası:', err);
+    res.status(500).json({ error: 'Görsel oluşturulamadı' });
   }
 });
 
