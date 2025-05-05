@@ -38,37 +38,47 @@ export default function App() {
   };
 
   const handleGenerate = async () => {
-    setLoading(true);
-    const formData = new FormData();
-    formData.append('overlayText', text);
-    formData.append('size', size);
-    formData.append('customWidth', customWidth);
-    formData.append('customHeight', customHeight);
-    formData.append('bgMode', bgMode);
-    formData.append('bgColor', bgColor);
-    formData.append('logoPosition', logoPosition);
-    formData.append('logoScale', logoScale);
-    formData.append('textColor', textColor);
-    formData.append('textFont', textFont);
-    formData.append('textSize', textSize);
-    formData.append('frameColor', frameColor);
-    if (logo) formData.append('logo', logo);
-    if (bgImage && bgMode === 'image') formData.append('bgImage', bgImage);
+  setLoading(true); // yükleniyor barı başlasın
+  const formData = new FormData();
+  formData.append('overlayText', text);
+  formData.append('size', size);
+  formData.append('customWidth', customWidth);
+  formData.append('customHeight', customHeight);
+  formData.append('bgMode', bgMode);
+  formData.append('bgColor', bgColor);
+  formData.append('logoPosition', logoPosition);
+  formData.append('logoScale', logoScale);
+  formData.append('textColor', textColor);
+  formData.append('textFont', textFont);
+  formData.append('textSize', textSize);
+  formData.append('frameColor', frameColor);
+  if (logo) formData.append('logo', logo);
+  if (bgImage && bgMode === 'image') formData.append('bgImage', bgImage);
 
-    try {
-      const res = await axios.post(`/api/generate-image`, formData, {
-        headers: {
-          Authorization: token,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setImage(res.data.imageUrl);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+  const backendUrl = 'https://ai-backend-x5g9.onrender.com';
+
+  try {
+    const res = await axios.post(`${backendUrl}/api/generate-image`, formData, {
+      headers: {
+        Authorization: token,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    // Görsel URL'si geldiyse önizleme olarak göster
+    if (res.data.imageUrl) {
+      setImage(`${backendUrl}${res.data.imageUrl}`);
+    } else {
+      console.error('Boş görsel yanıtı:', res.data);
+      alert('Görsel oluşturulamadı.');
     }
-  };
+  } catch (err) {
+    console.error('Hata:', err);
+    alert('Görsel oluşturulamadı.');
+  } finally {
+    setLoading(false); // yüklenme durumu kapansın
+  }
+};
 
   const handleBuyCredit = async () => {
     const res = await axios.post(`/api/paytr/init`, { email, amount: 69 });
