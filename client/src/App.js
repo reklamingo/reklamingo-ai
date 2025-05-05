@@ -6,14 +6,13 @@ export default function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
-  const [prompt, setPrompt] = useState('');
   const [text, setText] = useState('');
   const [textColor, setTextColor] = useState('#ffffff');
   const [textFont, setTextFont] = useState('Quicksand');
   const [textSize, setTextSize] = useState(48);
   const [logo, setLogo] = useState(null);
   const [logoScale, setLogoScale] = useState(100);
-  const [bgMode, setBgMode] = useState('ai');
+  const [bgMode, setBgMode] = useState('color');
   const [bgColor, setBgColor] = useState('#ffffff');
   const [bgImage, setBgImage] = useState(null);
   const [logoPosition, setLogoPosition] = useState('top');
@@ -41,7 +40,6 @@ export default function App() {
   const handleGenerate = async () => {
     setLoading(true);
     const formData = new FormData();
-    formData.append('prompt', prompt);
     formData.append('overlayText', text);
     formData.append('size', size);
     formData.append('customWidth', customWidth);
@@ -103,7 +101,6 @@ export default function App() {
 
         {stage === 'generate' && (
           <div className="space-y-2">
-            <input className="p-2 text-black w-full" placeholder="Prompt girin" onChange={e => setPrompt(e.target.value)} />
             <input className="p-2 text-black w-full" placeholder="Görsel yazısı" onChange={e => setText(e.target.value)} />
 
             <select className="p-2 text-black w-full" onChange={e => setSize(e.target.value)}>
@@ -122,9 +119,8 @@ export default function App() {
             )}
 
             <div className="flex gap-4 text-sm">
-              <label><input type="radio" name="bgMode" value="ai" defaultChecked onChange={e => setBgMode(e.target.value)} /> AI Görseli</label>
-              <label><input type="radio" name="bgMode" value="color" onChange={e => setBgMode(e.target.value)} /> Renk Seç</label>
-              <label><input type="radio" name="bgMode" value="image" onChange={e => setBgMode(e.target.value)} /> Arka Plan Yükle</label>
+              <label><input type="radio" name="bgMode" value="color" checked={bgMode === 'color'} onChange={e => setBgMode(e.target.value)} /> Renk Seç</label>
+              <label><input type="radio" name="bgMode" value="image" checked={bgMode === 'image'} onChange={e => setBgMode(e.target.value)} /> Arka Plan Yükle</label>
             </div>
 
             {bgMode === 'color' && <input type="color" className="w-full" value={bgColor} onChange={e => setBgColor(e.target.value)} />}
