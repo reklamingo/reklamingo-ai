@@ -2,7 +2,7 @@
   "name": "client",
   "version": "1.0.0",
   "private": true,
-  "proxy": "https://ai-backend.onrender.com",
+  "proxy": "https://ai-backend-x5g9.onrender.com",
   "dependencies": {
     "axios": "^1.6.8",
     "react": "^18.2.0",
