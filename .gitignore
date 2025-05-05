@@ -14,7 +14,7 @@ client/.env
 
 # Backend
 server/node_modules
-server/uploads
+!server/uploads/.keep
 server/.env
 
 # Sistem dosyaları
