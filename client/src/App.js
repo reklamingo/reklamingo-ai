@@ -1,4 +1,3 @@
-// client/src/App.js
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -21,68 +20,64 @@ export default function App() {
   const [customHeight, setCustomHeight] = useState('');
   const [frameColor, setFrameColor] = useState('#3ecf00');
   const [image, setImage] = useState('');
-  const generateRoutes = require('./generate');
   const [stage, setStage] = useState('login');
   const [loading, setLoading] = useState(false);
   const [paymentIframe, setPaymentIframe] = useState(null);
 
+  const backendUrl = 'https://ai-backend-x5g9.onrender.com';
+
   const handleRegister = async () => {
-    await axios.post(`/api/register`, { email, password });
+    await axios.post(`${backendUrl}/api/register`, { email, password });
     alert('Kayıt tamamlandı');
     setStage('login');
   };
 
   const handleLogin = async () => {
-    const res = await axios.post(`/api/login`, { email, password });
+    const res = await axios.post(`${backendUrl}/api/login`, { email, password });
     setToken(res.data.token);
     setStage('generate');
   };
 
   const handleGenerate = async () => {
-  setLoading(true); // yükleniyor barı başlasın
-  const formData = new FormData();
-  formData.append('overlayText', text);
-  formData.append('size', size);
-  formData.append('customWidth', customWidth);
-  formData.append('customHeight', customHeight);
-  formData.append('bgMode', bgMode);
-  formData.append('bgColor', bgColor);
-  formData.append('logoPosition', logoPosition);
-  formData.append('logoScale', logoScale);
-  formData.append('textColor', textColor);
-  formData.append('textFont', textFont);
-  formData.append('textSize', textSize);
-  formData.append('frameColor', frameColor);
-  if (logo) formData.append('logo', logo);
-  if (bgImage && bgMode === 'image') formData.append('bgImage', bgImage);
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('overlayText', text);
+    formData.append('size', size);
+    formData.append('customWidth', customWidth);
+    formData.append('customHeight', customHeight);
+    formData.append('bgMode', bgMode);
+    formData.append('bgColor', bgColor);
+    formData.append('logoPosition', logoPosition);
+    formData.append('logoScale', logoScale);
+    formData.append('textColor', textColor);
+    formData.append('textFont', textFont);
+    formData.append('textSize', textSize);
+    formData.append('frameColor', frameColor);
+    if (logo) formData.append('logo', logo);
+    if (bgImage && bgMode === 'image') formData.append('bgImage', bgImage);
 
-  const backendUrl = 'https://ai-backend-x5g9.onrender.com';
-
-  try {
-    const res = await axios.post(`${backendUrl}/api/generate-image`, formData, {
-      headers: {
-        Authorization: token,
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    // Görsel URL'si geldiyse önizleme olarak göster
-    if (res.data.imageUrl) {
-      setImage(`${backendUrl}${res.data.imageUrl}`);
-    } else {
-      console.error('Boş görsel yanıtı:', res.data);
+    try {
+      const res = await axios.post(`${backendUrl}/api/generate-image`, formData, {
+        headers: {
+          Authorization: token,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      if (res.data.imageUrl) {
+        setImage(`${backendUrl}${res.data.imageUrl}`);
+      } else {
+        alert('Görsel oluşturulamadı.');
+      }
+    } catch (err) {
+      console.error('Hata:', err);
       alert('Görsel oluşturulamadı.');
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error('Hata:', err);
-    alert('Görsel oluşturulamadı.');
-  } finally {
-    setLoading(false); // yüklenme durumu kapansın
-  }
-};
+  };
 
   const handleBuyCredit = async () => {
-    const res = await axios.post(`/api/paytr/init`, { email, amount: 69 });
+    const res = await axios.post(`${backendUrl}/api/paytr/init`, { email, amount: 69 });
     const iframeHTML = `<iframe src="https://www.paytr.com/odeme/guvenli/${res.data.token}" frameborder="0" scrolling="no" style="width: 100%; min-height: 600px;"></iframe>`;
     setPaymentIframe(iframeHTML);
   };
@@ -113,7 +108,6 @@ export default function App() {
         {stage === 'generate' && (
           <div className="space-y-2">
             <input className="p-2 text-black w-full" placeholder="Görsel yazısı" onChange={e => setText(e.target.value)} />
-
             <select className="p-2 text-black w-full" onChange={e => setSize(e.target.value)}>
               <option value="1080x1080">Instagram Gönderi (1:1)</option>
               <option value="1080x1920">Instagram Hikaye (9:16)</option>
@@ -144,7 +138,6 @@ export default function App() {
               <option value="bottom">Logo Altta</option>
             </select>
             <input className="p-2 w-full text-black" type="range" min="10" max="200" value={logoScale} onChange={e => setLogoScale(e.target.value)} /> Logo Boyutu: %{logoScale}
-
             <input className="p-2 w-full text-black" type="color" value={textColor} onChange={e => setTextColor(e.target.value)} /> Yazı Rengi
             <input className="p-2 w-full text-black" type="number" value={textSize} onChange={e => setTextSize(e.target.value)} placeholder="Yazı Boyutu (px)" />
 
