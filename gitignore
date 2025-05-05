@@ -1,0 +1,21 @@
+# Ortak
+.env
+.DS_Store
+node_modules
+dist
+build
+coverage
+*.log
+
+# Frontend (React)
+client/node_modules
+client/build
+client/.env
+
+# Backend
+server/node_modules
+server/uploads
+server/.env
+
+# Sistem dosyaları
+Thumbs.db
